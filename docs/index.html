@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Window Trend: is the receiver getting more open or less open at the throw?</title>
+<style>
+:root{--open:#1f77b4;--close:#d95f02;--steady:#b9c0c8;--ink:#17202a;--muted:#55606c;--line:#e3e7ec;--bg:#f8f9fb;--card:#ffffff}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:980px;margin:0 auto;padding:0 24px 72px}
+section{padding:60px 0 12px;border-top:1px solid var(--line)}
+section.first{border-top:0;padding-top:56px}
+h1{font-size:60px;line-height:1.05;margin:0 0 28px;letter-spacing:-.02em}
+h2{font-size:31px;line-height:1.2;margin:0 0 18px;letter-spacing:-.01em}
+h3{font-size:22px;line-height:1.25;margin:0}
+p{margin:0 0 16px}
+.kicker{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+.lead{font-size:23px;line-height:1.45;max-width:800px}
+.muted{color:var(--muted)}
+.small{font-size:16px;color:var(--muted)}
+.sw{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.sw.open,.seg.open,.fill.open{background:var(--open)}
+.sw.close,.seg.close,.fill.close{background:var(--close)}
+.sw.steady,.seg.steady{background:var(--steady)}
+
+/* 1. headline */
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:30px 0 14px}
+.big{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px 26px 22px;border-top:8px solid var(--steady)}
+.big.open{border-top-color:var(--open)}
+.big.close{border-top-color:var(--close)}
+.big .num{font-size:92px;line-height:1;font-weight:750;letter-spacing:-.03em}
+.big.open .num{color:var(--open)}
+.big.close .num{color:var(--close)}
+.big .what{font-size:20px;line-height:1.35;margin:10px 0 0}
+.big .what b{display:block}
+.same{font-size:20px;background:#eef1f4;border-radius:10px;padding:14px 18px;margin:0 0 8px}
+.jump{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:22px 0 0;font-size:17px}
+.jump a{color:var(--ink);font-weight:600;text-decoration:none;border:2px solid #c3cad2;border-radius:999px;padding:7px 16px;background:#fff}
+.jump a:hover{border-color:var(--ink)}
+.jump a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+h2{scroll-margin-top:20px}
+
+/* 2. pictures */
+.pics{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:22px 0 18px}
+.pic{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px 20px;margin:0}
+.pic svg{display:block;width:100%;height:auto}
+.pic figcaption{margin-top:6px}
+.pic figcaption b{display:block;font-size:20px}
+.pic-row{font-size:16px;fill:#55606c;font-weight:600}
+.pic-gap{font-size:18px;fill:#17202a;font-weight:700}
+.pic-who{font-size:16px;fill:#55606c}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0 0 8px}
+.rule p:last-child{margin-bottom:0}
+
+/* strips */
+.mix{margin:14px 0 4px}
+.mix-name{font-weight:650;margin-bottom:6px}
+.mix-bar{display:flex;height:26px;border-radius:7px;overflow:hidden;gap:2px;background:#fff}
+.seg{display:block;min-width:2px}
+.mix-key{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:16px;color:var(--muted);margin-top:7px}
+.mix-key span{white-space:nowrap}
+
+/* 3. bars */
+.bands{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:22px 0 14px}
+.band{display:grid;grid-template-columns:200px 1fr 190px;gap:18px;align-items:center;padding:18px 0;border-top:1px solid var(--line)}
+.band:first-child{border-top:0}
+.band-name{font-weight:650;line-height:1.3}
+.band-name span{display:block;font-weight:400;color:var(--muted);font-size:16px}
+.bar-row{display:grid;grid-template-columns:72px 1fr 205px;gap:10px;align-items:center;margin:5px 0}
+.bar-lab{font-size:16px;color:var(--muted)}
+.track{display:block;height:22px;background:#eef1f4;border-radius:5px;overflow:hidden}
+.fill{display:block;height:100%;border-radius:5px}
+.bar-val{font-size:16px;white-space:nowrap}
+.bar-val b{font-size:19px}
+.bar-val small{color:var(--muted);font-size:14px}
+.band-gap{font-size:16px;font-weight:650;text-align:right;line-height:1.3}
+.facts{list-style:none;padding:0;margin:20px 0 8px;display:grid;gap:12px}
+.facts li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.facts b{font-weight:700}
+
+/* 4. cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:22px 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 18px}
+.card-n{font-size:15px;color:var(--muted);margin:2px 0 12px}
+.card-say{font-size:18px;line-height:1.5}
+.nums{list-style:none;margin:16px 0 0;padding:0}
+.nums li{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:baseline;padding:9px 0;border-top:1px solid var(--line);font-size:15px;color:var(--muted);line-height:1.35}
+.nums b{font-size:21px;color:var(--ink);white-space:nowrap}
+.lineup{padding-left:24px;margin:8px 0 8px}
+.lineup li{margin-bottom:8px}
+
+/* 5, 6. lookups */
+.controls{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;margin:20px 0 18px}
+.field label,.switch legend{display:block;font-size:15px;font-weight:650;color:var(--muted);margin-bottom:6px;padding:0}
+select{font:inherit;color:var(--ink);background:#fff;border:2px solid #8b96a3;border-radius:10px;padding:10px 14px;min-height:50px;min-width:300px;max-width:100%}
+select:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.switch{border:0;margin:0;padding:0;min-width:0}
+.switch .opts{display:inline-flex;border:2px solid #8b96a3;border-radius:10px;overflow:hidden;background:#fff}
+.switch label{margin:0;cursor:pointer}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.switch span{display:block;padding:10px 22px;min-height:46px;font-weight:600;color:var(--ink)}
+.switch input:checked+span{background:var(--ink);color:#fff}
+.switch input:focus-visible+span{outline:3px solid var(--ink);outline-offset:-5px;box-shadow:inset 0 0 0 3px #fff}
+.picks{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
+.picks-lab{font-size:16px;color:var(--muted)}
+.picks button{font:inherit;font-size:16px;color:var(--ink);background:#fff;border:2px solid #c3cad2;border-radius:999px;padding:7px 16px;cursor:pointer;text-align:left}
+.picks button:hover{border-color:var(--ink)}
+.picks button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.report{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin:0 0 16px}
+.report p{font-size:20px;line-height:1.55;margin:0 0 12px}
+.report .verdict{font-size:22px;font-weight:700;background:#eef1f4;border-radius:10px;padding:12px 16px;margin:16px 0 18px}
+.report .verdict span{display:block;font-size:17px;font-weight:400;color:var(--muted);margin-top:2px}
+.report p.note{font-size:16px;color:var(--muted);margin:12px 0 0}
+.report h3{font-size:17px;margin:22px 0 2px;color:var(--muted);font-weight:650}
+.honest{border-left:5px solid var(--ink);background:#eef1f4;border-radius:0 10px 10px 0;padding:14px 18px;margin:0 0 8px}
+table{width:100%;border-collapse:collapse;font-size:17px;margin-top:8px}
+caption{text-align:left;font-size:16px;color:var(--muted);padding:0 0 8px;caption-side:top}
+th,td{padding:10px 8px;border-top:1px solid var(--line);text-align:right;vertical-align:baseline}
+th:first-child,td:first-child{text-align:left}
+thead th{border-top:0;font-size:15px;color:var(--muted);font-weight:650;line-height:1.3;vertical-align:bottom}
+td small{color:var(--muted);font-size:14px}
+tr.total td{font-weight:700;border-top:2px solid #c9d0d8}
+
+/* 7, 8 */
+.who{list-style:none;padding:0;margin:18px 0 8px;display:grid;gap:12px}
+.who li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.who b{display:block;font-size:20px;margin-bottom:2px}
+.limits{padding-left:24px;margin:16px 0 8px}
+.limits li{margin-bottom:12px}
+footer{border-top:1px solid var(--line);margin-top:56px;padding-top:22px;font-size:15px;color:var(--muted)}
+
+@media (max-width:860px){
+  .band{grid-template-columns:1fr;gap:6px}
+  .band-gap{text-align:left}
+  .cards{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  body{font-size:17px}
+  main{padding:0 16px 56px}
+  section{padding:44px 0 8px}
+  section.first{padding-top:36px}
+  h1{font-size:42px;margin-bottom:20px}
+  h2{font-size:25px}
+  .lead{font-size:20px}
+  .duel{gap:10px}
+  .big{padding:16px 14px}
+  .big .num{font-size:58px}
+  .big .what{font-size:16px}
+  .same{font-size:17px}
+  .pics{grid-template-columns:1fr}
+  .bands{padding:4px 14px}
+  .bar-row{grid-template-columns:62px 1fr;row-gap:2px}
+  .bar-val{grid-column:2}
+  .report{padding:18px 16px}
+  .report p{font-size:18px}
+  .report .verdict{font-size:19px}
+  select{min-width:0;width:100%}
+  .field{width:100%}
+  table{font-size:15px}
+  th,td{padding:9px 4px}
+  thead th .sw{width:10px;height:10px;margin-right:4px}
+}
+</style>
+</head>
+<body>
+<main>
+
+<section class="first" aria-labelledby="q1">
+  <p class="kicker">NFL tracking data, 2021 season, Weeks 1 to 8</p>
+  <h1>Window Trend</h1>
+  <h2 id="q1">What is this?</h2>
+  <p class="lead">A new stat for wide receivers, tight ends and running backs: when the quarterback lets go of the ball, is the player getting <b>more open</b> or <b>less open</b>? The answer goes with a big difference in how often the pass is caught.</p>
+  <div class="duel">
+    <div class="big open">
+      <div class="num">68%</div>
+      <p class="what"><b>of passes caught when the receiver is pulling away from his defender.</b>We call this an opening window.</p>
+    </div>
+    <div class="big close">
+      <div class="num">51%</div>
+      <p class="what"><b>of passes caught when the defender is catching up.</b>We call this a closing window.</p>
+    </div>
+  </div>
+  <p class="same"><b>Same 2 to 3 yards of space in both cases.</b> What differs is which way the gap is moving when the ball comes out.</p>
+  <p class="small">Percent of throws caught, out of 319 opening and 437 closing throws where the receiver had 2 to 3 yards of space at the throw. All numbers on this page come from 7,263 throws in 122 games; all but 5 went to a wide receiver, tight end or back.</p>
+  <nav class="jump" aria-label="Jump to a section"><span class="muted">Jump to:</span><a href="#q5">Look up a player</a><a href="#q6">Look up a team</a><a href="#q7">Who would use this</a></nav>
+</section>
+
+<section aria-labelledby="q2">
+  <h2 id="q2">What do opening and closing mean?</h2>
+  <p>Today a receiver's openness is reported as one number, "separation": the yards between the receiver and the closest defender at the moment of the throw. But that gap is always moving. Window Trend looks at the half second before the throw and asks which way it is going.</p>
+  <div class="pics">
+    <figure class="pic">
+      <svg viewBox="0 0 400 216" role="img" aria-label="Drawing: the gap between receiver and defender goes from 1.5 yards to 2.5 yards"><text x="14" y="26" class="pic-row">Half a second before the throw</text><line x1="175.0" y1="66" x2="234" y2="66" stroke="var(--open)" stroke-width="5" stroke-linecap="round"/><text x="205.0" y="48" text-anchor="middle" class="pic-gap">1.5 yards</text><path d="M151.0 57L169.0 75M151.0 75L169.0 57" stroke="#4a5561" stroke-width="4.5" stroke-linecap="round"/><circle cx="250" cy="66" r="10.5" fill="#17202a"/><text x="160.0" y="96" text-anchor="middle" class="pic-who">defender</text><text x="250" y="96" text-anchor="middle" class="pic-who">receiver</text><line x1="14" y1="112" x2="386" y2="112" stroke="#e3e7ec" stroke-width="1.5"/><text x="14" y="130" class="pic-row">When the ball is thrown</text><line x1="185.0" y1="170" x2="304" y2="170" stroke="var(--open)" stroke-width="5" stroke-linecap="round"/><text x="245.0" y="152" text-anchor="middle" class="pic-gap">2.5 yards</text><path d="M161.0 161L179.0 179M161.0 179L179.0 161" stroke="#4a5561" stroke-width="4.5" stroke-linecap="round"/><circle cx="320" cy="170" r="10.5" fill="#17202a"/></svg>
+      <figcaption><b><i class="sw open"></i>Opening: the defender is falling behind.</b>The gap is growing, so he is likely to have more space when the ball gets there.</figcaption>
+    </figure>
+    <figure class="pic">
+      <svg viewBox="0 0 400 216" role="img" aria-label="Drawing: the gap between receiver and defender goes from 3.5 yards to 2.5 yards"><text x="14" y="26" class="pic-row">Half a second before the throw</text><line x1="55.0" y1="66" x2="234" y2="66" stroke="var(--close)" stroke-width="5" stroke-linecap="round"/><text x="145.0" y="48" text-anchor="middle" class="pic-gap">3.5 yards</text><path d="M31.0 57L49.0 75M31.0 75L49.0 57" stroke="#4a5561" stroke-width="4.5" stroke-linecap="round"/><circle cx="250" cy="66" r="10.5" fill="#17202a"/><text x="40.0" y="96" text-anchor="middle" class="pic-who">defender</text><text x="250" y="96" text-anchor="middle" class="pic-who">receiver</text><line x1="14" y1="112" x2="386" y2="112" stroke="#e3e7ec" stroke-width="1.5"/><text x="14" y="130" class="pic-row">When the ball is thrown</text><line x1="185.0" y1="170" x2="304" y2="170" stroke="var(--close)" stroke-width="5" stroke-linecap="round"/><text x="245.0" y="152" text-anchor="middle" class="pic-gap">2.5 yards</text><path d="M161.0 161L179.0 179M161.0 179L179.0 161" stroke="#4a5561" stroke-width="4.5" stroke-linecap="round"/><circle cx="320" cy="170" r="10.5" fill="#17202a"/></svg>
+      <figcaption><b><i class="sw close"></i>Closing: the defender is catching up.</b>The gap is shrinking, so he is likely to have less space when the ball gets there.</figcaption>
+    </figure>
+  </div>
+  <p>Both drawings end with the same 2.5 yards of space, so a separation number calls them the same throw. Window Trend tells them apart.</p>
+  <div class="rule">
+    <p><b>The exact rule.</b> We measure how fast the gap is changing over the half second before the throw. Growing by more than 1 yard per second is <b>opening</b>. Shrinking by more than 1 yard per second is <b>closing</b>. Anything in between is <b>steady</b>.</p>
+    <div class="mix"><div class="mix-name">All 7,263 throws</div><div class="mix-bar" role="img" aria-label="All 7,263 throws: 26.4% opening, 40.3% steady, 33.2% closing"><span class="seg open" style="flex:26.4 1 0"></span><span class="seg steady" style="flex:40.3 1 0"></span><span class="seg close" style="flex:33.2 1 0"></span></div><div class="mix-key"><span><i class="sw open"></i>Opening 26.4%</span><span><i class="sw steady"></i>Steady 40.3%</span><span><i class="sw close"></i>Closing 33.2%</span></div></div>
+  </div>
+</section>
+
+<section aria-labelledby="q3">
+  <h2 id="q3">Does it actually matter?</h2>
+  <p>Yes, and most when it is hard to complete a pass. Each pair of bars compares throws with the <em>same amount of space</em> at the throw. The bar length is the percent of those throws that were caught.</p>
+  <div class="bands"><div class="band"><div class="band-name">1 to 2 yards of space<span>tightly covered</span></div><div class="bars"><div class="bar-row"><span class="bar-lab">Opening</span><span class="track"><span class="fill open" style="width:71.7%"></span></span><span class="bar-val"><b>72%</b> caught <small>of 127 throws</small></span></div><div class="bar-row"><span class="bar-lab">Closing</span><span class="track"><span class="fill close" style="width:42.4%"></span></span><span class="bar-val"><b>42%</b> caught <small>of 401 throws</small></span></div></div><div class="band-gap">about 30 more catches per 100 throws</div></div><div class="band"><div class="band-name">2 to 3 yards of space<span>contested</span></div><div class="bars"><div class="bar-row"><span class="bar-lab">Opening</span><span class="track"><span class="fill open" style="width:67.7%"></span></span><span class="bar-val"><b>68%</b> caught <small>of 319 throws</small></span></div><div class="bar-row"><span class="bar-lab">Closing</span><span class="track"><span class="fill close" style="width:51.0%"></span></span><span class="bar-val"><b>51%</b> caught <small>of 437 throws</small></span></div></div><div class="band-gap">about 17 more catches per 100 throws</div></div><div class="band"><div class="band-name">3 to 5 yards of space<span>open</span></div><div class="bars"><div class="bar-row"><span class="bar-lab">Opening</span><span class="track"><span class="fill open" style="width:74.1%"></span></span><span class="bar-val"><b>74%</b> caught <small>of 615 throws</small></span></div><div class="bar-row"><span class="bar-lab">Closing</span><span class="track"><span class="fill close" style="width:68.0%"></span></span><span class="bar-val"><b>68%</b> caught <small>of 710 throws</small></span></div></div><div class="band-gap">about 6 more catches per 100 throws</div></div><div class="band"><div class="band-name">5 to 8 yards of space<span>wide open</span></div><div class="bars"><div class="bar-row"><span class="bar-lab">Opening</span><span class="track"><span class="fill open" style="width:77.6%"></span></span><span class="bar-val"><b>78%</b> caught <small>of 518 throws</small></span></div><div class="bar-row"><span class="bar-lab">Closing</span><span class="track"><span class="fill close" style="width:77.7%"></span></span><span class="bar-val"><b>78%</b> caught <small>of 498 throws</small></span></div></div><div class="band-gap">no real difference</div></div></div>
+  <p><b>How to read it: when the receiver is tightly covered (1 to 2 yards of space), a pass into an opening window is caught 72 times in 100, against 42 in 100 when the window is closing. When he is already wide open (5 to 8 yards), it makes no difference.</b></p>
+  <p class="small">Not shown: with more than 8 yards of space it is 85% against 80%.</p>
+  <ul class="facts">
+    <li><b>More yards after the catch.</b> On short throws (less than 5 yards downfield), the receiver gains <b>6.7 yards</b> after the catch when the window is opening and <b>4.0 yards</b> when it is closing. <span class="small">(711 and 973 caught passes)</span></li>
+    <li><b>Biggest against man coverage.</b> Against Cover-1, where each defender follows one receiver, <b>80%</b> of throws are caught when the window is opening and <b>53%</b> when it is closing. <span class="small">(326 and 440 throws)</span></li>
+    <li><b>More expected points.</b> A throw into an opening window is worth about <b>0.55 points</b> to the offense on average; into a closing window, about <b>0.10</b>. <span class="small">(Expected points: how much a play raises the score a team can expect from that drive.)</span></li>
+  </ul>
+</section>
+
+<section aria-labelledby="q4">
+  <h2 id="q4">What does it mean for receivers, tight ends and running backs?</h2>
+  <p>The three positions get very different windows.</p>
+  <div class="cards"><article class="card"><h3>Wide receivers</h3><p class="card-n">4,416 throws</p><p class="card-say">On tightly covered throws (1 to 3 yards of space), wide receivers catch 69% when the window is opening and 45% when a defender is closing.</p><ul class="nums"><li><b>26.5%</b><span><i class="sw open"></i>of throws: window opening</span></li><li><b>29.8%</b><span><i class="sw close"></i>of throws: window closing</span></li><li><b>4.6 vs 3.1</b><span>yards after the catch, opening vs closing</span></li></ul></article><article class="card"><h3>Tight ends</h3><p class="card-n">1,563 throws</p><p class="card-say">Tight ends get an opening window most often: 29.5% of throws, against 26.5% for wide receivers and 21.8% for running backs.</p><ul class="nums"><li><b>29.5%</b><span><i class="sw open"></i>of throws: window opening</span></li><li><b>31.1%</b><span><i class="sw close"></i>of throws: window closing</span></li><li><b>5.5 vs 3.0</b><span>yards after the catch, opening vs closing</span></li></ul></article><article class="card"><h3>Running backs</h3><p class="card-n">1,222 throws</p><p class="card-say">About half of all throws to running backs arrive with a defender closing in. When the window is opening instead, their catches gain 9.3 yards after the catch, against 5.1.</p><ul class="nums"><li><b>21.8%</b><span><i class="sw open"></i>of throws: window opening</span></li><li><b>48.4%</b><span><i class="sw close"></i>of throws: window closing</span></li><li><b>9.3 vs 5.1</b><span>yards after the catch, opening vs closing</span></li></ul></article></div>
+  <p><b>Where the player lines up matters too.</b></p>
+  <ul class="lineup"><li>Split out wide and tightly covered (1 to 3 yards of space): 72% caught when opening, 43% when closing. (195 and 422 throws)</li><li>Tight ends lined up next to the offensive line and tightly covered: 59% against 57%. No real difference, so the idea does not help there. (41 and 77 throws, a small sample)</li><li>Out of the backfield: a defender is closing on 49% of throws.</li></ul>
+  <p class="small">Positions are roster positions. The 57 throws to fullbacks are not in the running back card.</p>
+</section>
+
+<section aria-labelledby="q5">
+  <h2 id="q5">Look up a player</h2>
+  <p>Pick any of the 103 players who were thrown to at least 25 times. The report compares his catches with what the league catches on throws with the same space and the same window.</p>
+  <div class="controls">
+    <div class="field">
+      <label for="player">Player</label>
+      <select id="player"></select>
+    </div>
+  </div>
+  <div class="picks" id="picks"><span class="picks-lab">Or try one of these:</span></div>
+  <div class="report" id="player-report" aria-live="polite"></div>
+  <p class="honest"><b>Read this fairly.</b> These numbers describe the throws a player was <b>given</b>: quarterback timing, play design and the coverage decide whether the window is opening. Use them to judge his catch rate fairly, not as a measure of how well he gets open.</p>
+  <p class="small">Counts cover the throws in the tracking data for Weeks 1 to 8, so they can run a little below box-score totals.</p>
+</section>
+
+<section aria-labelledby="q6">
+  <h2 id="q6">Look up a team</h2>
+  <p>Offense: is the ball coming out while the receiver is still getting open? Defense: are the defenders closing on the receiver when the ball comes out?</p>
+  <div class="controls">
+    <div class="field">
+      <label for="team">Team</label>
+      <select id="team"></select>
+    </div>
+    <fieldset class="switch">
+      <legend>Side of the ball</legend>
+      <div class="opts">
+        <label><input type="radio" name="side" value="off" checked><span>Offense</span></label>
+        <label><input type="radio" name="side" value="def"><span>Defense</span></label>
+      </div>
+    </fieldset>
+  </div>
+  <div class="report" id="team-report" aria-live="polite"></div>
+  <p class="small">Each team has only 143 to 284 throws in these eight weeks, so treat the ranks as a rough guide. A coverage is listed only when it has 15 or more throws.</p>
+</section>
+
+<section aria-labelledby="q7">
+  <h2 id="q7">Who would use this?</h2>
+  <ul class="who">
+    <li><b>A coach</b>To time throws so the ball leaves while the gap is still growing. Running backs are the clearest case: 48% of their throws arrive with a defender closing, and their catches on opening windows gain about 4 more yards after the catch. On defense, the team lookup hints at which coverages were closing on the receiver (small samples).</li>
+    <li><b>A scout</b>To put a catch rate in context: did he catch more or fewer balls than the league does on throws with the same space and window? For quarterbacks it is different: how often a quarterback throws into an opening window carries over from one half of his games to the other, so it says more about the passer and the offense than about the receiver.</li>
+    <li><b>A broadcaster</b>To explain a replay with one color: blue if the receiver was pulling away at the throw, orange if the defender was closing. It helps explain why two throws with the same space ended differently.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="q8">
+  <h2 id="q8">What it cannot tell you</h2>
+  <ul class="limits">
+    <li><b>We never see the catch.</b> The tracking data stops half a second after the throw. We know which way the gap was moving when the ball left, not how much space there was when it arrived.</li>
+    <li><b>It is not a grade for getting open.</b> A receiver who got many opening windows in half of his games did not get more of them in the other half. The windows come from quarterback timing, play design and coverage.</li>
+    <li><b>The samples are small.</b> This is eight weeks: 7,263 throws in total, 143 to 284 per team, and as few as 25 for a player. Team ranks and player numbers are a rough guide, not a verdict.</li>
+    <li><b>It shows a pattern, not a cause.</b> Short passes, play design and the type of coverage all move the window too. Opening and closing are also a simple cut (1 yard per second), not a law of nature.</li>
+  </ul>
+  <footer>Built in Python from NFL player tracking data (2021 season, Weeks 1 to 8), coverage labels from PFF and public nflverse play-by-play. Every number on this page is computed by the scripts in <code>src/</code>.</footer>
+</section>
+
+</main>
+<script type="application/json" id="wt-data">{"players":[{"name":"A.J. Brown","pos":"WR","teams":["TEN"],"n":52,"n_open":12,"n_close":19,"catches":35,"exp":31,"diff":4},{"name":"A.J. Green","pos":"WR","teams":["ARI"],"n":37,"n_open":13,"n_close":11,"catches":22,"exp":22,"diff":0},{"name":"Adam Humphries","pos":"WR","teams":["WAS"],"n":27,"n_open":6,"n_close":9,"catches":17,"exp":18,"diff":-1},{"name":"Adam Thielen","pos":"WR","teams":["MIN"],"n":51,"n_open":17,"n_close":10,"catches":33,"exp":30,"diff":3},{"name":"Allen Robinson","pos":"WR","teams":["CHI"],"n":45,"n_open":8,"n_close":15,"catches":25,"exp":25,"diff":0},{"name":"Alvin Kamara","pos":"RB","teams":["NO"],"n":27,"n_open":8,"n_close":12,"catches":19,"exp":20,"diff":-1},{"name":"Amari Cooper","pos":"WR","teams":["DAL"],"n":52,"n_open":8,"n_close":22,"catches":33,"exp":30,"diff":3},{"name":"Amon-Ra St. Brown","pos":"WR","teams":["DET"],"n":38,"n_open":13,"n_close":14,"catches":27,"exp":25,"diff":2},{"name":"Antonio Brown","pos":"WR","teams":["TB"],"n":40,"n_open":11,"n_close":17,"catches":26,"exp":25,"diff":1},{"name":"Austin Ekeler","pos":"RB","teams":["LAC"],"n":33,"n_open":10,"n_close":16,"catches":26,"exp":23,"diff":3},{"name":"Austin Hooper","pos":"TE","teams":["CLE"],"n":26,"n_open":6,"n_close":10,"catches":16,"exp":15,"diff":1},{"name":"Brandin Cooks","pos":"WR","teams":["HOU"],"n":62,"n_open":17,"n_close":16,"catches":40,"exp":36,"diff":4},{"name":"Brandon Aiyuk","pos":"WR","teams":["SF"],"n":25,"n_open":6,"n_close":8,"catches":13,"exp":15,"diff":-2},{"name":"Bryan Edwards","pos":"WR","teams":["LV"],"n":28,"n_open":3,"n_close":13,"catches":17,"exp":15,"diff":2},{"name":"Byron Pringle","pos":"WR","teams":["KC"],"n":26,"n_open":9,"n_close":8,"catches":17,"exp":17,"diff":0},{"name":"Calvin Ridley","pos":"WR","teams":["ATL"],"n":52,"n_open":18,"n_close":10,"catches":29,"exp":33,"diff":-4},{"name":"CeeDee Lamb","pos":"WR","teams":["DAL"],"n":49,"n_open":11,"n_close":18,"catches":29,"exp":29,"diff":0},{"name":"Chase Claypool","pos":"WR","teams":["PIT"],"n":37,"n_open":7,"n_close":12,"catches":17,"exp":20,"diff":-3},{"name":"Chris Godwin","pos":"WR","teams":["TB"],"n":52,"n_open":14,"n_close":13,"catches":34,"exp":28,"diff":6},{"name":"Christian Kirk","pos":"WR","teams":["ARI"],"n":36,"n_open":13,"n_close":8,"catches":29,"exp":22,"diff":7},{"name":"Cole Beasley","pos":"WR","teams":["BUF"],"n":40,"n_open":9,"n_close":12,"catches":28,"exp":26,"diff":2},{"name":"Cole Kmet","pos":"TE","teams":["CHI"],"n":36,"n_open":4,"n_close":19,"catches":22,"exp":22,"diff":0},{"name":"Cooper Kupp","pos":"WR","teams":["LA"],"n":84,"n_open":29,"n_close":24,"catches":54,"exp":52,"diff":2},{"name":"Cordarrelle Patterson","pos":"RB","teams":["ATL"],"n":35,"n_open":9,"n_close":11,"catches":27,"exp":23,"diff":4},{"name":"Corey Davis","pos":"WR","teams":["NYJ"],"n":46,"n_open":14,"n_close":15,"catches":23,"exp":27,"diff":-4},{"name":"Courtland Sutton","pos":"WR","teams":["DEN"],"n":60,"n_open":22,"n_close":16,"catches":36,"exp":35,"diff":1},{"name":"D'Andre Swift","pos":"RB","teams":["DET"],"n":47,"n_open":11,"n_close":20,"catches":36,"exp":34,"diff":2},{"name":"D.J. Moore","pos":"WR","teams":["CAR"],"n":73,"n_open":16,"n_close":27,"catches":42,"exp":43,"diff":-1},{"name":"DK Metcalf","pos":"WR","teams":["SEA"],"n":54,"n_open":14,"n_close":21,"catches":35,"exp":34,"diff":1},{"name":"Dallas Goedert","pos":"TE","teams":["PHI"],"n":28,"n_open":12,"n_close":4,"catches":22,"exp":18,"diff":4},{"name":"Dalton Schultz","pos":"TE","teams":["DAL"],"n":39,"n_open":14,"n_close":9,"catches":29,"exp":24,"diff":5},{"name":"Dan Arnold","pos":"TE","teams":["JAX","CAR"],"n":34,"n_open":5,"n_close":12,"catches":20,"exp":23,"diff":-3},{"name":"Darius Slayton","pos":"WR","teams":["NYG"],"n":25,"n_open":9,"n_close":11,"catches":12,"exp":14,"diff":-2},{"name":"Darnell Mooney","pos":"WR","teams":["CHI"],"n":46,"n_open":13,"n_close":20,"catches":27,"exp":28,"diff":-1},{"name":"Darren Waller","pos":"TE","teams":["LV"],"n":46,"n_open":11,"n_close":21,"catches":27,"exp":27,"diff":0},{"name":"Davante Adams","pos":"WR","teams":["GB"],"n":62,"n_open":15,"n_close":16,"catches":36,"exp":35,"diff":1},{"name":"DeAndre Hopkins","pos":"WR","teams":["ARI"],"n":42,"n_open":8,"n_close":4,"catches":24,"exp":24,"diff":0},{"name":"DeVante Parker","pos":"WR","teams":["MIA"],"n":38,"n_open":5,"n_close":15,"catches":21,"exp":20,"diff":1},{"name":"DeVonta Smith","pos":"WR","teams":["PHI"],"n":51,"n_open":7,"n_close":15,"catches":31,"exp":28,"diff":3},{"name":"Deebo Samuel","pos":"WR","teams":["SF"],"n":61,"n_open":20,"n_close":20,"catches":37,"exp":39,"diff":-2},{"name":"Diontae Johnson","pos":"WR","teams":["PIT"],"n":51,"n_open":11,"n_close":14,"catches":25,"exp":28,"diff":-3},{"name":"Elijah Moore","pos":"WR","teams":["NYJ"],"n":31,"n_open":11,"n_close":8,"catches":11,"exp":20,"diff":-9},{"name":"Emmanuel Sanders","pos":"WR","teams":["BUF"],"n":45,"n_open":13,"n_close":7,"catches":23,"exp":28,"diff":-5},{"name":"Evan Engram","pos":"TE","teams":["NYG"],"n":25,"n_open":8,"n_close":7,"catches":16,"exp":15,"diff":1},{"name":"Ezekiel Elliott","pos":"RB","teams":["DAL"],"n":26,"n_open":5,"n_close":10,"catches":21,"exp":18,"diff":3},{"name":"Henry Ruggs","pos":"WR","teams":["LV"],"n":36,"n_open":10,"n_close":11,"catches":22,"exp":22,"diff":0},{"name":"Hunter Henry","pos":"TE","teams":["NE"],"n":36,"n_open":12,"n_close":10,"catches":25,"exp":23,"diff":2},{"name":"Hunter Renfrow","pos":"WR","teams":["LV"],"n":45,"n_open":14,"n_close":14,"catches":32,"exp":30,"diff":2},{"name":"J.D. McKissic","pos":"RB","teams":["WAS"],"n":39,"n_open":9,"n_close":13,"catches":28,"exp":29,"diff":-1},{"name":"Ja'Marr Chase","pos":"WR","teams":["CIN"],"n":56,"n_open":11,"n_close":19,"catches":35,"exp":31,"diff":4},{"name":"Jakobi Meyers","pos":"WR","teams":["NE"],"n":66,"n_open":18,"n_close":18,"catches":42,"exp":38,"diff":4},{"name":"Jared Cook","pos":"TE","teams":["LAC"],"n":37,"n_open":9,"n_close":9,"catches":21,"exp":23,"diff":-2},{"name":"Jaylen Waddle","pos":"WR","teams":["MIA"],"n":53,"n_open":14,"n_close":24,"catches":34,"exp":34,"diff":0},{"name":"Jonnu Smith","pos":"TE","teams":["NE"],"n":25,"n_open":12,"n_close":6,"catches":16,"exp":18,"diff":-2},{"name":"Julio Jones","pos":"WR","teams":["TEN"],"n":29,"n_open":6,"n_close":6,"catches":18,"exp":16,"diff":2},{"name":"Justin Jefferson","pos":"WR","teams":["MIN"],"n":56,"n_open":10,"n_close":13,"catches":32,"exp":29,"diff":3},{"name":"K.J. Osborn","pos":"WR","teams":["MIN"],"n":36,"n_open":9,"n_close":8,"catches":24,"exp":23,"diff":1},{"name":"Kadarius Toney","pos":"WR","teams":["NYG"],"n":25,"n_open":4,"n_close":8,"catches":18,"exp":15,"diff":3},{"name":"Kalif Raymond","pos":"WR","teams":["DET"],"n":36,"n_open":13,"n_close":10,"catches":22,"exp":23,"diff":-1},{"name":"Keenan Allen","pos":"WR","teams":["LAC"],"n":61,"n_open":18,"n_close":14,"catches":38,"exp":37,"diff":1},{"name":"Kendrick Bourne","pos":"WR","teams":["NE"],"n":35,"n_open":10,"n_close":8,"catches":26,"exp":21,"diff":5},{"name":"Kenneth Gainwell","pos":"RB","teams":["PHI"],"n":27,"n_open":3,"n_close":16,"catches":17,"exp":20,"diff":-3},{"name":"Kenny Golladay","pos":"WR","teams":["NYG"],"n":28,"n_open":8,"n_close":9,"catches":17,"exp":15,"diff":2},{"name":"Kyle Pitts","pos":"TE","teams":["ATL"],"n":56,"n_open":12,"n_close":14,"catches":35,"exp":31,"diff":4},{"name":"Laviska Shenault","pos":"WR","teams":["JAX"],"n":40,"n_open":14,"n_close":17,"catches":21,"exp":26,"diff":-5},{"name":"Leonard Fournette","pos":"RB","teams":["TB"],"n":29,"n_open":2,"n_close":15,"catches":21,"exp":21,"diff":0},{"name":"Mark Andrews","pos":"TE","teams":["BAL"],"n":53,"n_open":23,"n_close":13,"catches":38,"exp":37,"diff":1},{"name":"Marquez Callaway","pos":"WR","teams":["NO"],"n":34,"n_open":6,"n_close":10,"catches":20,"exp":19,"diff":1},{"name":"Marquise Brown","pos":"WR","teams":["BAL"],"n":48,"n_open":10,"n_close":14,"catches":28,"exp":32,"diff":-4},{"name":"Marvin Jones","pos":"WR","teams":["JAX"],"n":48,"n_open":10,"n_close":13,"catches":28,"exp":29,"diff":-1},{"name":"Mecole Hardman","pos":"WR","teams":["KC"],"n":34,"n_open":13,"n_close":8,"catches":21,"exp":24,"diff":-3},{"name":"Michael Carter","pos":"RB","teams":["NYJ"],"n":29,"n_open":6,"n_close":15,"catches":18,"exp":21,"diff":-3},{"name":"Michael Pittman","pos":"WR","teams":["IND"],"n":59,"n_open":17,"n_close":16,"catches":39,"exp":37,"diff":2},{"name":"Mike Davis","pos":"RB","teams":["ATL"],"n":29,"n_open":10,"n_close":13,"catches":21,"exp":23,"diff":-2},{"name":"Mike Evans","pos":"WR","teams":["TB"],"n":59,"n_open":17,"n_close":15,"catches":35,"exp":33,"diff":2},{"name":"Mike Gesicki","pos":"TE","teams":["MIA"],"n":44,"n_open":12,"n_close":16,"catches":33,"exp":26,"diff":7},{"name":"Mike Williams","pos":"WR","teams":["LAC"],"n":52,"n_open":12,"n_close":13,"catches":27,"exp":28,"diff":-1},{"name":"Myles Gaskin","pos":"RB","teams":["MIA"],"n":33,"n_open":8,"n_close":16,"catches":27,"exp":24,"diff":3},{"name":"Najee Harris","pos":"RB","teams":["PIT"],"n":43,"n_open":13,"n_close":19,"catches":33,"exp":31,"diff":2},{"name":"Nelson Agholor","pos":"WR","teams":["NE"],"n":38,"n_open":8,"n_close":7,"catches":17,"exp":20,"diff":-3},{"name":"Noah Fant","pos":"TE","teams":["DEN"],"n":50,"n_open":11,"n_close":14,"catches":35,"exp":34,"diff":1},{"name":"Odell Beckham","pos":"WR","teams":["CLE"],"n":31,"n_open":7,"n_close":10,"catches":12,"exp":18,"diff":-6},{"name":"Pat Freiermuth","pos":"TE","teams":["PIT"],"n":27,"n_open":6,"n_close":10,"catches":22,"exp":16,"diff":6},{"name":"Rashard Higgins","pos":"WR","teams":["CLE"],"n":25,"n_open":8,"n_close":6,"catches":14,"exp":16,"diff":-2},{"name":"Ricky Seals-Jones","pos":"TE","teams":["WAS"],"n":31,"n_open":11,"n_close":7,"catches":19,"exp":19,"diff":0},{"name":"Robby Anderson","pos":"WR","teams":["CAR"],"n":49,"n_open":10,"n_close":18,"catches":15,"exp":30,"diff":-15},{"name":"Robert Woods","pos":"WR","teams":["LA"],"n":50,"n_open":18,"n_close":10,"catches":31,"exp":33,"diff":-2},{"name":"Sammy Watkins","pos":"WR","teams":["BAL"],"n":32,"n_open":9,"n_close":8,"catches":18,"exp":21,"diff":-3},{"name":"Stefon Diggs","pos":"WR","teams":["BUF"],"n":53,"n_open":15,"n_close":7,"catches":31,"exp":31,"diff":0},{"name":"Sterling Shepard","pos":"WR","teams":["NYG"],"n":39,"n_open":8,"n_close":19,"catches":26,"exp":23,"diff":3},{"name":"T.J. Hockenson","pos":"TE","teams":["DET"],"n":66,"n_open":22,"n_close":29,"catches":47,"exp":41,"diff":6},{"name":"Tee Higgins","pos":"WR","teams":["CIN"],"n":51,"n_open":7,"n_close":15,"catches":29,"exp":27,"diff":2},{"name":"Terry McLaurin","pos":"WR","teams":["WAS"],"n":72,"n_open":18,"n_close":18,"catches":38,"exp":42,"diff":-4},{"name":"Tim Patrick","pos":"WR","teams":["DEN"],"n":42,"n_open":14,"n_close":13,"catches":28,"exp":26,"diff":2},{"name":"Travis Kelce","pos":"TE","teams":["KC"],"n":71,"n_open":24,"n_close":21,"catches":43,"exp":43,"diff":0},{"name":"Tyler Boyd","pos":"WR","teams":["CIN"],"n":50,"n_open":17,"n_close":12,"catches":34,"exp":29,"diff":5},{"name":"Tyler Conklin","pos":"TE","teams":["MIN"],"n":34,"n_open":9,"n_close":9,"catches":24,"exp":22,"diff":2},{"name":"Tyler Higbee","pos":"TE","teams":["LA"],"n":27,"n_open":6,"n_close":10,"catches":20,"exp":16,"diff":4},{"name":"Tyler Lockett","pos":"WR","teams":["SEA"],"n":54,"n_open":9,"n_close":22,"catches":32,"exp":33,"diff":-1},{"name":"Tyreek Hill","pos":"WR","teams":["KC"],"n":73,"n_open":25,"n_close":18,"catches":49,"exp":47,"diff":2},{"name":"Van Jefferson","pos":"WR","teams":["LA"],"n":35,"n_open":8,"n_close":12,"catches":19,"exp":20,"diff":-1},{"name":"Zach Ertz","pos":"TE","teams":["PHI","ARI"],"n":35,"n_open":10,"n_close":9,"catches":21,"exp":22,"diff":-1},{"name":"Zach Pascal","pos":"WR","teams":["IND"],"n":32,"n_open":13,"n_close":11,"catches":17,"exp":20,"diff":-3}],"teams":[{"abbr":"ARI","name":"Arizona Cardinals","in_sentence":"the Cardinals","singular":false,"off":{"n":187,"open":30.481283422459892,"close":25.668449197860966,"rank":4,"cov":[{"cov":"Cover-1","type":"man","n":32,"open":12.5,"close":21.875},{"cov":"Cover-2","type":"zone","n":15,"open":33.33333333333333,"close":40.0},{"cov":"Cover-3","type":"zone","n":79,"open":30.37974683544304,"close":18.9873417721519},{"cov":"Quarters","type":"zone","n":28,"open":46.42857142857143,"close":35.714285714285715},{"cov":"Cover-6","type":"zone","n":18,"open":38.88888888888889,"close":38.88888888888889}]},"def":{"n":224,"open":20.535714285714285,"close":39.285714285714285,"rank":5,"cov":[{"cov":"Cover-1","type":"man","n":34,"open":20.588235294117645,"close":20.588235294117645},{"cov":"Cover-2","type":"zone","n":34,"open":20.588235294117645,"close":47.05882352941176},{"cov":"Cover-3","type":"zone","n":77,"open":20.77922077922078,"close":45.45454545454545},{"cov":"Quarters","type":"zone","n":25,"open":32.0,"close":36.0},{"cov":"Cover-6","type":"zone","n":19,"open":15.789473684210526,"close":36.84210526315789}]}},{"abbr":"ATL","name":"Atlanta Falcons","in_sentence":"the Falcons","singular":false,"off":{"n":265,"open":28.30188679245283,"close":30.18867924528302,"rank":9,"cov":[{"cov":"Cover-1","type":"man","n":50,"open":16.0,"close":16.0},{"cov":"Cover-2","type":"zone","n":42,"open":42.857142857142854,"close":26.190476190476193},{"cov":"Cover-3","type":"zone","n":88,"open":31.818181818181817,"close":34.090909090909086},{"cov":"Quarters","type":"zone","n":35,"open":25.71428571428571,"close":34.285714285714285},{"cov":"Cover-6","type":"zone","n":20,"open":15.0,"close":55.00000000000001}]},"def":{"n":191,"open":32.460732984293195,"close":24.60732984293194,"rank":32,"cov":[{"cov":"Cover-1","type":"man","n":40,"open":20.0,"close":15.0},{"cov":"Cover-2","type":"zone","n":95,"open":43.15789473684211,"close":27.368421052631582},{"cov":"Cover-3","type":"zone","n":35,"open":25.71428571428571,"close":31.428571428571427}]}},{"abbr":"BAL","name":"Baltimore Ravens","in_sentence":"the Ravens","singular":false,"off":{"n":213,"open":28.638497652582164,"close":33.33333333333333,"rank":8,"cov":[{"cov":"Cover-1","type":"man","n":26,"open":34.61538461538461,"close":7.6923076923076925},{"cov":"Cover-2","type":"zone","n":17,"open":29.411764705882355,"close":41.17647058823529},{"cov":"Cover-3","type":"zone","n":93,"open":30.107526881720432,"close":34.40860215053764},{"cov":"Quarters","type":"zone","n":35,"open":31.428571428571427,"close":37.142857142857146},{"cov":"Cover-6","type":"zone","n":16,"open":25.0,"close":43.75}]},"def":{"n":229,"open":29.257641921397383,"close":28.38427947598253,"rank":24,"cov":[{"cov":"Cover-1","type":"man","n":72,"open":25.0,"close":26.38888888888889},{"cov":"Cover-3","type":"zone","n":65,"open":35.38461538461539,"close":32.30769230769231},{"cov":"Quarters","type":"zone","n":18,"open":16.666666666666664,"close":38.88888888888889},{"cov":"Cover-6","type":"zone","n":31,"open":45.16129032258064,"close":19.35483870967742}]}},{"abbr":"BUF","name":"Buffalo Bills","in_sentence":"the Bills","singular":false,"off":{"n":214,"open":28.037383177570092,"close":24.766355140186917,"rank":11,"cov":[{"cov":"Cover-1","type":"man","n":54,"open":20.37037037037037,"close":14.814814814814813},{"cov":"Cover-2","type":"zone","n":35,"open":34.285714285714285,"close":25.71428571428571},{"cov":"Cover-3","type":"zone","n":65,"open":26.153846153846157,"close":30.76923076923077},{"cov":"Quarters","type":"zone","n":20,"open":35.0,"close":25.0}]},"def":{"n":199,"open":26.633165829145728,"close":33.66834170854271,"rank":15,"cov":[{"cov":"Cover-1","type":"man","n":49,"open":16.3265306122449,"close":28.57142857142857},{"cov":"Cover-2","type":"zone","n":18,"open":33.33333333333333,"close":33.33333333333333},{"cov":"Cover-3","type":"zone","n":44,"open":38.63636363636363,"close":40.909090909090914},{"cov":"Quarters","type":"zone","n":48,"open":22.916666666666664,"close":35.41666666666667},{"cov":"Cover-6","type":"zone","n":16,"open":37.5,"close":37.5}]}},{"abbr":"CAR","name":"Carolina Panthers","in_sentence":"the Panthers","singular":false,"off":{"n":242,"open":23.140495867768596,"close":37.60330578512397,"rank":27,"cov":[{"cov":"Cover-1","type":"man","n":64,"open":10.9375,"close":39.0625},{"cov":"Cover-2","type":"zone","n":39,"open":41.02564102564102,"close":25.64102564102564},{"cov":"Cover-3","type":"zone","n":71,"open":18.30985915492958,"close":46.478873239436616},{"cov":"Quarters","type":"zone","n":30,"open":26.666666666666668,"close":33.33333333333333},{"cov":"Cover-6","type":"zone","n":19,"open":31.57894736842105,"close":36.84210526315789}]},"def":{"n":222,"open":22.972972972972975,"close":35.585585585585584,"rank":12,"cov":[{"cov":"Cover-1","type":"man","n":52,"open":19.230769230769234,"close":26.923076923076923},{"cov":"Cover-2","type":"zone","n":22,"open":45.45454545454545,"close":27.27272727272727},{"cov":"Cover-3","type":"zone","n":76,"open":18.421052631578945,"close":43.42105263157895},{"cov":"Quarters","type":"zone","n":36,"open":25.0,"close":38.88888888888889}]}},{"abbr":"CHI","name":"Chicago Bears","in_sentence":"the Bears","singular":false,"off":{"n":186,"open":20.43010752688172,"close":41.39784946236559,"rank":30,"cov":[{"cov":"Cover-1","type":"man","n":37,"open":13.513513513513514,"close":35.13513513513514},{"cov":"Cover-2","type":"zone","n":17,"open":11.76470588235294,"close":52.94117647058824},{"cov":"Cover-3","type":"zone","n":72,"open":26.38888888888889,"close":43.05555555555556},{"cov":"Quarters","type":"zone","n":25,"open":16.0,"close":48.0},{"cov":"Cover-6","type":"zone","n":22,"open":22.727272727272727,"close":22.727272727272727}]},"def":{"n":205,"open":24.878048780487806,"close":30.73170731707317,"rank":21,"cov":[{"cov":"Cover-1","type":"man","n":56,"open":14.285714285714285,"close":16.071428571428573},{"cov":"Cover-3","type":"zone","n":56,"open":23.214285714285715,"close":41.07142857142857},{"cov":"Cover-6","type":"zone","n":50,"open":36.0,"close":28.000000000000004}]}},{"abbr":"CIN","name":"Cincinnati Bengals","in_sentence":"the Bengals","singular":false,"off":{"n":224,"open":25.0,"close":32.142857142857146,"rank":20,"cov":[{"cov":"Cover-1","type":"man","n":64,"open":20.3125,"close":26.5625},{"cov":"Cover-2","type":"zone","n":21,"open":57.14285714285714,"close":19.047619047619047},{"cov":"Cover-3","type":"zone","n":61,"open":24.59016393442623,"close":39.34426229508197},{"cov":"Quarters","type":"zone","n":19,"open":26.31578947368421,"close":47.368421052631575},{"cov":"Cover-6","type":"zone","n":36,"open":22.22222222222222,"close":25.0}]},"def":{"n":284,"open":28.169014084507044,"close":33.45070422535211,"rank":16,"cov":[{"cov":"Cover-1","type":"man","n":59,"open":25.423728813559322,"close":18.64406779661017},{"cov":"Cover-2","type":"zone","n":55,"open":32.72727272727273,"close":29.09090909090909},{"cov":"Cover-3","type":"zone","n":91,"open":26.373626373626376,"close":38.46153846153847},{"cov":"Quarters","type":"zone","n":26,"open":26.923076923076923,"close":42.30769230769231},{"cov":"Cover-6","type":"zone","n":27,"open":40.74074074074074,"close":33.33333333333333}]}},{"abbr":"CLE","name":"Cleveland Browns","in_sentence":"the Browns","singular":false,"off":{"n":196,"open":26.02040816326531,"close":33.6734693877551,"rank":16,"cov":[{"cov":"Cover-1","type":"man","n":44,"open":22.727272727272727,"close":22.727272727272727},{"cov":"Cover-2","type":"zone","n":30,"open":40.0,"close":33.33333333333333},{"cov":"Cover-3","type":"zone","n":54,"open":31.48148148148148,"close":44.44444444444444},{"cov":"Cover-6","type":"zone","n":36,"open":19.444444444444446,"close":27.77777777777778}]},"def":{"n":217,"open":24.42396313364055,"close":34.10138248847927,"rank":14,"cov":[{"cov":"Cover-1","type":"man","n":38,"open":10.526315789473683,"close":31.57894736842105},{"cov":"Cover-3","type":"zone","n":76,"open":28.947368421052634,"close":31.57894736842105},{"cov":"Quarters","type":"zone","n":66,"open":28.78787878787879,"close":36.36363636363637},{"cov":"Cover-6","type":"zone","n":15,"open":20.0,"close":40.0}]}},{"abbr":"DAL","name":"Dallas Cowboys","in_sentence":"the Cowboys","singular":false,"off":{"n":233,"open":25.321888412017167,"close":33.047210300429185,"rank":19,"cov":[{"cov":"Cover-1","type":"man","n":57,"open":14.035087719298245,"close":22.807017543859647},{"cov":"Cover-2","type":"zone","n":21,"open":47.61904761904761,"close":28.57142857142857},{"cov":"Cover-3","type":"zone","n":70,"open":27.142857142857142,"close":41.42857142857143},{"cov":"Quarters","type":"zone","n":29,"open":24.137931034482758,"close":44.827586206896555},{"cov":"Cover-6","type":"zone","n":21,"open":33.33333333333333,"close":28.57142857142857}]},"def":{"n":220,"open":24.09090909090909,"close":30.909090909090907,"rank":19,"cov":[{"cov":"Cover-1","type":"man","n":76,"open":14.473684210526317,"close":25.0},{"cov":"Cover-2","type":"zone","n":40,"open":45.0,"close":27.500000000000004},{"cov":"Cover-3","type":"zone","n":53,"open":20.754716981132077,"close":37.735849056603776},{"cov":"Quarters","type":"zone","n":32,"open":21.875,"close":46.875}]}},{"abbr":"DEN","name":"Denver Broncos","in_sentence":"the Broncos","singular":false,"off":{"n":251,"open":31.07569721115538,"close":28.68525896414343,"rank":3,"cov":[{"cov":"Cover-1","type":"man","n":54,"open":22.22222222222222,"close":18.51851851851852},{"cov":"Cover-2","type":"zone","n":21,"open":38.095238095238095,"close":19.047619047619047},{"cov":"Cover-3","type":"zone","n":102,"open":35.294117647058826,"close":32.35294117647059},{"cov":"Quarters","type":"zone","n":28,"open":14.285714285714285,"close":50.0},{"cov":"Cover-6","type":"zone","n":19,"open":42.10526315789473,"close":21.052631578947366}]},"def":{"n":228,"open":19.736842105263158,"close":45.17543859649123,"rank":1,"cov":[{"cov":"Cover-1","type":"man","n":77,"open":14.285714285714285,"close":40.25974025974026},{"cov":"Cover-3","type":"zone","n":38,"open":26.31578947368421,"close":47.368421052631575},{"cov":"Quarters","type":"zone","n":24,"open":25.0,"close":37.5},{"cov":"Cover-6","type":"zone","n":54,"open":29.629629629629626,"close":44.44444444444444}]}},{"abbr":"DET","name":"Detroit Lions","in_sentence":"the Lions","singular":false,"off":{"n":280,"open":26.785714285714285,"close":40.35714285714286,"rank":13,"cov":[{"cov":"Cover-1","type":"man","n":59,"open":30.508474576271187,"close":27.11864406779661},{"cov":"Cover-2","type":"zone","n":20,"open":30.0,"close":55.00000000000001},{"cov":"Cover-3","type":"zone","n":116,"open":23.275862068965516,"close":48.275862068965516},{"cov":"Quarters","type":"zone","n":21,"open":23.809523809523807,"close":42.857142857142854},{"cov":"Cover-6","type":"zone","n":47,"open":34.04255319148936,"close":27.659574468085108}]},"def":{"n":184,"open":26.08695652173913,"close":25.543478260869566,"rank":30,"cov":[{"cov":"Cover-1","type":"man","n":36,"open":13.88888888888889,"close":27.77777777777778},{"cov":"Cover-2","type":"zone","n":30,"open":43.333333333333336,"close":26.666666666666668},{"cov":"Cover-3","type":"zone","n":51,"open":29.411764705882355,"close":21.568627450980394},{"cov":"Quarters","type":"zone","n":20,"open":25.0,"close":15.0},{"cov":"Cover-6","type":"zone","n":26,"open":19.230769230769234,"close":23.076923076923077}]}},{"abbr":"GB","name":"Green Bay Packers","in_sentence":"the Packers","singular":false,"off":{"n":190,"open":20.0,"close":31.05263157894737,"rank":32,"cov":[{"cov":"Cover-1","type":"man","n":54,"open":20.37037037037037,"close":18.51851851851852},{"cov":"Cover-2","type":"zone","n":21,"open":14.285714285714285,"close":52.38095238095239},{"cov":"Cover-3","type":"zone","n":49,"open":26.53061224489796,"close":36.734693877551024},{"cov":"Quarters","type":"zone","n":27,"open":25.925925925925924,"close":25.925925925925924},{"cov":"Cover-6","type":"zone","n":16,"open":18.75,"close":50.0}]},"def":{"n":230,"open":24.782608695652176,"close":38.26086956521739,"rank":7,"cov":[{"cov":"Cover-1","type":"man","n":45,"open":26.666666666666668,"close":31.11111111111111},{"cov":"Cover-3","type":"zone","n":78,"open":21.794871794871796,"close":47.43589743589743},{"cov":"Quarters","type":"zone","n":40,"open":22.5,"close":40.0},{"cov":"Cover-6","type":"zone","n":39,"open":33.33333333333333,"close":38.46153846153847}]}},{"abbr":"HOU","name":"Houston Texans","in_sentence":"the Texans","singular":false,"off":{"n":208,"open":20.192307692307693,"close":37.5,"rank":31,"cov":[{"cov":"Cover-1","type":"man","n":40,"open":22.5,"close":17.5},{"cov":"Cover-2","type":"zone","n":17,"open":35.294117647058826,"close":47.05882352941176},{"cov":"Cover-3","type":"zone","n":78,"open":12.82051282051282,"close":44.871794871794876},{"cov":"Quarters","type":"zone","n":33,"open":33.33333333333333,"close":33.33333333333333},{"cov":"Cover-6","type":"zone","n":17,"open":17.647058823529413,"close":52.94117647058824}]},"def":{"n":199,"open":38.19095477386934,"close":24.623115577889447,"rank":31,"cov":[{"cov":"Cover-1","type":"man","n":38,"open":23.684210526315788,"close":36.84210526315789},{"cov":"Cover-2","type":"zone","n":69,"open":57.971014492753625,"close":18.84057971014493},{"cov":"Cover-3","type":"zone","n":49,"open":26.53061224489796,"close":18.367346938775512},{"cov":"Cover-6","type":"zone","n":20,"open":35.0,"close":30.0}]}},{"abbr":"IND","name":"Indianapolis Colts","in_sentence":"the Colts","singular":false,"off":{"n":217,"open":26.72811059907834,"close":32.71889400921659,"rank":14,"cov":[{"cov":"Cover-1","type":"man","n":46,"open":15.217391304347828,"close":39.130434782608695},{"cov":"Cover-2","type":"zone","n":35,"open":45.714285714285715,"close":31.428571428571427},{"cov":"Cover-3","type":"zone","n":59,"open":22.033898305084744,"close":37.28813559322034},{"cov":"Quarters","type":"zone","n":26,"open":19.230769230769234,"close":42.30769230769231},{"cov":"Cover-6","type":"zone","n":29,"open":37.93103448275862,"close":24.137931034482758}]},"def":{"n":231,"open":27.27272727272727,"close":28.13852813852814,"rank":25,"cov":[{"cov":"Cover-1","type":"man","n":40,"open":15.0,"close":20.0},{"cov":"Cover-2","type":"zone","n":48,"open":35.41666666666667,"close":31.25},{"cov":"Cover-3","type":"zone","n":78,"open":28.205128205128204,"close":30.76923076923077},{"cov":"Quarters","type":"zone","n":22,"open":27.27272727272727,"close":36.36363636363637},{"cov":"Cover-6","type":"zone","n":23,"open":21.73913043478261,"close":30.434782608695656}]}},{"abbr":"JAX","name":"Jacksonville Jaguars","in_sentence":"the Jaguars","singular":false,"off":{"n":236,"open":27.54237288135593,"close":35.16949152542373,"rank":12,"cov":[{"cov":"Cover-1","type":"man","n":46,"open":15.217391304347828,"close":36.95652173913043},{"cov":"Cover-2","type":"zone","n":58,"open":39.6551724137931,"close":36.206896551724135},{"cov":"Cover-3","type":"zone","n":67,"open":22.388059701492537,"close":37.3134328358209},{"cov":"Quarters","type":"zone","n":19,"open":36.84210526315789,"close":36.84210526315789},{"cov":"Cover-6","type":"zone","n":24,"open":41.66666666666667,"close":20.833333333333336}]},"def":{"n":195,"open":30.256410256410255,"close":27.692307692307693,"rank":27,"cov":[{"cov":"Cover-1","type":"man","n":63,"open":14.285714285714285,"close":17.46031746031746},{"cov":"Cover-2","type":"zone","n":30,"open":26.666666666666668,"close":50.0},{"cov":"Cover-3","type":"zone","n":64,"open":40.625,"close":28.125}]}},{"abbr":"KC","name":"Kansas City Chiefs","in_sentence":"the Chiefs","singular":false,"off":{"n":277,"open":36.101083032490976,"close":28.880866425992778,"rank":1,"cov":[{"cov":"Cover-1","type":"man","n":48,"open":27.083333333333332,"close":25.0},{"cov":"Cover-2","type":"zone","n":39,"open":46.15384615384615,"close":33.33333333333333},{"cov":"Cover-3","type":"zone","n":66,"open":42.42424242424242,"close":24.242424242424242},{"cov":"Quarters","type":"zone","n":72,"open":33.33333333333333,"close":33.33333333333333},{"cov":"Cover-6","type":"zone","n":21,"open":38.095238095238095,"close":33.33333333333333},{"cov":"2-Man","type":"man","n":17,"open":23.52941176470588,"close":17.647058823529413}]},"def":{"n":226,"open":25.663716814159294,"close":26.10619469026549,"rank":29,"cov":[{"cov":"Cover-1","type":"man","n":64,"open":29.6875,"close":10.9375},{"cov":"Cover-2","type":"zone","n":49,"open":32.6530612244898,"close":26.53061224489796},{"cov":"Cover-3","type":"zone","n":37,"open":27.027027027027028,"close":37.83783783783784},{"cov":"Quarters","type":"zone","n":20,"open":10.0,"close":45.0},{"cov":"Cover-6","type":"zone","n":17,"open":23.52941176470588,"close":23.52941176470588}]}},{"abbr":"LA","name":"Los Angeles Rams","in_sentence":"the Rams","singular":false,"off":{"n":234,"open":30.34188034188034,"close":29.059829059829063,"rank":6,"cov":[{"cov":"Cover-1","type":"man","n":43,"open":23.25581395348837,"close":25.581395348837212},{"cov":"Cover-2","type":"zone","n":39,"open":30.76923076923077,"close":33.33333333333333},{"cov":"Cover-3","type":"zone","n":66,"open":34.84848484848485,"close":22.727272727272727},{"cov":"Quarters","type":"zone","n":24,"open":29.166666666666668,"close":33.33333333333333},{"cov":"Cover-6","type":"zone","n":26,"open":30.76923076923077,"close":34.61538461538461}]},"def":{"n":261,"open":22.22222222222222,"close":44.827586206896555,"rank":2,"cov":[{"cov":"Cover-1","type":"man","n":23,"open":8.695652173913043,"close":56.52173913043478},{"cov":"Cover-3","type":"zone","n":120,"open":24.166666666666668,"close":49.166666666666664},{"cov":"Quarters","type":"zone","n":49,"open":30.612244897959183,"close":30.612244897959183},{"cov":"Cover-6","type":"zone","n":45,"open":20.0,"close":46.666666666666664}]}},{"abbr":"LAC","name":"Los Angeles Chargers","in_sentence":"the Chargers","singular":false,"off":{"n":245,"open":28.163265306122447,"close":30.20408163265306,"rank":10,"cov":[{"cov":"Cover-1","type":"man","n":63,"open":20.634920634920633,"close":25.396825396825395},{"cov":"Cover-2","type":"zone","n":26,"open":46.15384615384615,"close":30.76923076923077},{"cov":"Cover-3","type":"zone","n":74,"open":31.08108108108108,"close":29.72972972972973},{"cov":"Quarters","type":"zone","n":42,"open":28.57142857142857,"close":38.095238095238095}]},"def":{"n":186,"open":29.56989247311828,"close":36.55913978494624,"rank":8,"cov":[{"cov":"Cover-1","type":"man","n":50,"open":14.000000000000002,"close":30.0},{"cov":"Cover-3","type":"zone","n":64,"open":31.25,"close":45.3125},{"cov":"Quarters","type":"zone","n":21,"open":47.61904761904761,"close":33.33333333333333},{"cov":"Cover-6","type":"zone","n":27,"open":37.03703703703704,"close":29.629629629629626}]}},{"abbr":"LV","name":"Las Vegas Raiders","in_sentence":"the Raiders","singular":false,"off":{"n":230,"open":23.91304347826087,"close":40.43478260869565,"rank":25,"cov":[{"cov":"Cover-1","type":"man","n":74,"open":18.91891891891892,"close":33.78378378378378},{"cov":"Cover-3","type":"zone","n":70,"open":21.428571428571427,"close":57.14285714285714},{"cov":"Quarters","type":"zone","n":21,"open":42.857142857142854,"close":28.57142857142857},{"cov":"Cover-6","type":"zone","n":19,"open":36.84210526315789,"close":42.10526315789473}]},"def":{"n":233,"open":23.605150214592275,"close":35.622317596566525,"rank":11,"cov":[{"cov":"Cover-1","type":"man","n":34,"open":20.588235294117645,"close":29.411764705882355},{"cov":"Cover-3","type":"zone","n":138,"open":23.18840579710145,"close":37.68115942028986},{"cov":"Quarters","type":"zone","n":34,"open":20.588235294117645,"close":41.17647058823529}]}},{"abbr":"MIA","name":"Miami Dolphins","in_sentence":"the Dolphins","singular":false,"off":{"n":264,"open":24.62121212121212,"close":40.53030303030303,"rank":22,"cov":[{"cov":"Cover-1","type":"man","n":62,"open":12.903225806451612,"close":30.64516129032258},{"cov":"Cover-2","type":"zone","n":47,"open":36.17021276595745,"close":36.17021276595745},{"cov":"Cover-3","type":"zone","n":77,"open":29.87012987012987,"close":45.45454545454545},{"cov":"Quarters","type":"zone","n":36,"open":19.444444444444446,"close":44.44444444444444},{"cov":"Cover-6","type":"zone","n":16,"open":25.0,"close":43.75}]},"def":{"n":263,"open":28.517110266159694,"close":27.756653992395435,"rank":26,"cov":[{"cov":"Cover-1","type":"man","n":104,"open":22.115384615384613,"close":23.076923076923077},{"cov":"Cover-2","type":"zone","n":29,"open":44.827586206896555,"close":24.137931034482758},{"cov":"Cover-3","type":"zone","n":80,"open":28.749999999999996,"close":32.5}]}},{"abbr":"MIN","name":"Minnesota Vikings","in_sentence":"the Vikings","singular":false,"off":{"n":226,"open":24.778761061946902,"close":27.43362831858407,"rank":21,"cov":[{"cov":"Cover-1","type":"man","n":55,"open":14.545454545454545,"close":12.727272727272727},{"cov":"Cover-2","type":"zone","n":28,"open":35.714285714285715,"close":32.142857142857146},{"cov":"Cover-3","type":"zone","n":68,"open":25.0,"close":32.35294117647059},{"cov":"Quarters","type":"zone","n":28,"open":25.0,"close":32.142857142857146},{"cov":"Cover-6","type":"zone","n":20,"open":45.0,"close":30.0}]},"def":{"n":202,"open":25.247524752475247,"close":35.64356435643564,"rank":10,"cov":[{"cov":"Cover-1","type":"man","n":46,"open":17.391304347826086,"close":26.08695652173913},{"cov":"Cover-2","type":"zone","n":27,"open":33.33333333333333,"close":37.03703703703704},{"cov":"Cover-3","type":"zone","n":56,"open":19.642857142857142,"close":41.07142857142857},{"cov":"Quarters","type":"zone","n":25,"open":28.000000000000004,"close":44.0},{"cov":"Cover-6","type":"zone","n":29,"open":37.93103448275862,"close":34.48275862068966}]}},{"abbr":"NE","name":"New England Patriots","in_sentence":"the Patriots","singular":false,"off":{"n":256,"open":29.6875,"close":29.296875,"rank":7,"cov":[{"cov":"Cover-1","type":"man","n":80,"open":27.500000000000004,"close":20.0},{"cov":"Cover-2","type":"zone","n":25,"open":48.0,"close":28.000000000000004},{"cov":"Cover-3","type":"zone","n":79,"open":29.11392405063291,"close":34.177215189873415},{"cov":"Quarters","type":"zone","n":20,"open":15.0,"close":40.0},{"cov":"Cover-6","type":"zone","n":19,"open":21.052631578947366,"close":36.84210526315789}]},"def":{"n":246,"open":26.422764227642276,"close":30.89430894308943,"rank":20,"cov":[{"cov":"Cover-1","type":"man","n":113,"open":17.699115044247787,"close":25.663716814159294},{"cov":"Cover-2","type":"zone","n":37,"open":56.75675675675676,"close":27.027027027027028},{"cov":"Cover-3","type":"zone","n":64,"open":23.4375,"close":45.3125}]}},{"abbr":"NO","name":"New Orleans Saints","in_sentence":"the Saints","singular":false,"off":{"n":143,"open":25.874125874125873,"close":37.06293706293706,"rank":17,"cov":[{"cov":"Cover-1","type":"man","n":46,"open":15.217391304347828,"close":21.73913043478261},{"cov":"Cover-2","type":"zone","n":21,"open":38.095238095238095,"close":28.57142857142857},{"cov":"Cover-3","type":"zone","n":43,"open":34.883720930232556,"close":46.51162790697674}]},"def":{"n":230,"open":23.043478260869566,"close":28.695652173913043,"rank":23,"cov":[{"cov":"Cover-1","type":"man","n":64,"open":25.0,"close":20.3125},{"cov":"Cover-2","type":"zone","n":19,"open":10.526315789473683,"close":42.10526315789473},{"cov":"Cover-3","type":"zone","n":69,"open":20.28985507246377,"close":37.68115942028986},{"cov":"Quarters","type":"zone","n":37,"open":32.432432432432435,"close":24.324324324324326}]}},{"abbr":"NYG","name":"New York Giants","in_sentence":"the Giants","singular":false,"off":{"n":252,"open":23.41269841269841,"close":40.476190476190474,"rank":26,"cov":[{"cov":"Cover-1","type":"man","n":67,"open":19.402985074626866,"close":35.82089552238806},{"cov":"Cover-2","type":"zone","n":35,"open":40.0,"close":28.57142857142857},{"cov":"Cover-3","type":"zone","n":73,"open":23.28767123287671,"close":47.94520547945205},{"cov":"Quarters","type":"zone","n":24,"open":29.166666666666668,"close":45.83333333333333},{"cov":"Cover-6","type":"zone","n":31,"open":12.903225806451612,"close":45.16129032258064}]},"def":{"n":244,"open":32.78688524590164,"close":32.37704918032787,"rank":18,"cov":[{"cov":"Cover-1","type":"man","n":44,"open":25.0,"close":25.0},{"cov":"Cover-2","type":"zone","n":37,"open":37.83783783783784,"close":37.83783783783784},{"cov":"Cover-3","type":"zone","n":94,"open":34.04255319148936,"close":32.97872340425532},{"cov":"Quarters","type":"zone","n":27,"open":29.629629629629626,"close":48.148148148148145}]}},{"abbr":"NYJ","name":"New York Jets","in_sentence":"the Jets","singular":false,"off":{"n":240,"open":31.666666666666664,"close":30.833333333333336,"rank":2,"cov":[{"cov":"Cover-1","type":"man","n":74,"open":21.62162162162162,"close":27.027027027027028},{"cov":"Cover-2","type":"zone","n":40,"open":45.0,"close":32.5},{"cov":"Cover-3","type":"zone","n":74,"open":29.72972972972973,"close":33.78378378378378},{"cov":"Cover-6","type":"zone","n":24,"open":58.333333333333336,"close":20.833333333333336}]},"def":{"n":220,"open":26.81818181818182,"close":27.27272727272727,"rank":28,"cov":[{"cov":"Cover-1","type":"man","n":69,"open":17.391304347826086,"close":26.08695652173913},{"cov":"Cover-3","type":"zone","n":68,"open":33.82352941176471,"close":16.176470588235293},{"cov":"Quarters","type":"zone","n":35,"open":22.857142857142858,"close":48.57142857142857},{"cov":"Cover-6","type":"zone","n":26,"open":50.0,"close":26.923076923076923}]}},{"abbr":"PHI","name":"Philadelphia Eagles","in_sentence":"the Eagles","singular":false,"off":{"n":195,"open":21.025641025641026,"close":35.38461538461539,"rank":29,"cov":[{"cov":"Cover-1","type":"man","n":44,"open":20.454545454545457,"close":31.818181818181817},{"cov":"Cover-2","type":"zone","n":29,"open":27.586206896551722,"close":34.48275862068966},{"cov":"Cover-3","type":"zone","n":74,"open":18.91891891891892,"close":39.189189189189186},{"cov":"Quarters","type":"zone","n":20,"open":20.0,"close":45.0}]},"def":{"n":218,"open":27.06422018348624,"close":42.201834862385326,"rank":3,"cov":[{"cov":"Cover-1","type":"man","n":19,"open":26.31578947368421,"close":21.052631578947366},{"cov":"Cover-2","type":"zone","n":31,"open":35.483870967741936,"close":38.70967741935484},{"cov":"Cover-3","type":"zone","n":82,"open":30.48780487804878,"close":47.5609756097561},{"cov":"Quarters","type":"zone","n":29,"open":17.24137931034483,"close":41.37931034482759},{"cov":"Cover-6","type":"zone","n":39,"open":23.076923076923077,"close":38.46153846153847}]}},{"abbr":"PIT","name":"Pittsburgh Steelers","in_sentence":"the Steelers","singular":false,"off":{"n":223,"open":24.2152466367713,"close":34.97757847533632,"rank":24,"cov":[{"cov":"Cover-1","type":"man","n":37,"open":13.513513513513514,"close":29.72972972972973},{"cov":"Cover-2","type":"zone","n":31,"open":45.16129032258064,"close":19.35483870967742},{"cov":"Cover-3","type":"zone","n":65,"open":29.230769230769234,"close":32.30769230769231},{"cov":"Quarters","type":"zone","n":28,"open":14.285714285714285,"close":46.42857142857143},{"cov":"Cover-6","type":"zone","n":39,"open":25.64102564102564,"close":43.58974358974359}]},"def":{"n":213,"open":25.821596244131456,"close":39.436619718309856,"rank":4,"cov":[{"cov":"Cover-1","type":"man","n":46,"open":17.391304347826086,"close":41.30434782608695},{"cov":"Cover-2","type":"zone","n":45,"open":24.444444444444443,"close":37.77777777777778},{"cov":"Cover-3","type":"zone","n":79,"open":31.645569620253166,"close":44.303797468354425},{"cov":"Cover-6","type":"zone","n":20,"open":25.0,"close":40.0}]}},{"abbr":"SEA","name":"Seattle Seahawks","in_sentence":"the Seahawks","singular":false,"off":{"n":181,"open":22.099447513812155,"close":35.35911602209944,"rank":28,"cov":[{"cov":"Cover-1","type":"man","n":33,"open":12.121212121212121,"close":21.21212121212121},{"cov":"Cover-2","type":"zone","n":24,"open":20.833333333333336,"close":37.5},{"cov":"Cover-3","type":"zone","n":64,"open":25.0,"close":39.0625},{"cov":"Quarters","type":"zone","n":29,"open":27.586206896551722,"close":31.03448275862069}]},"def":{"n":266,"open":27.44360902255639,"close":35.714285714285715,"rank":9,"cov":[{"cov":"Cover-1","type":"man","n":38,"open":13.157894736842104,"close":36.84210526315789},{"cov":"Cover-2","type":"zone","n":46,"open":26.08695652173913,"close":32.608695652173914},{"cov":"Cover-3","type":"zone","n":99,"open":30.303030303030305,"close":32.323232323232325},{"cov":"Quarters","type":"zone","n":20,"open":15.0,"close":50.0},{"cov":"Cover-6","type":"zone","n":44,"open":38.63636363636363,"close":38.63636363636363}]}},{"abbr":"SF","name":"San Francisco 49ers","in_sentence":"the 49ers","singular":false,"off":{"n":184,"open":30.434782608695656,"close":28.26086956521739,"rank":5,"cov":[{"cov":"Cover-1","type":"man","n":31,"open":12.903225806451612,"close":12.903225806451612},{"cov":"Cover-2","type":"zone","n":22,"open":27.27272727272727,"close":36.36363636363637},{"cov":"Cover-3","type":"zone","n":69,"open":39.130434782608695,"close":27.536231884057973},{"cov":"Quarters","type":"zone","n":23,"open":26.08695652173913,"close":43.47826086956522},{"cov":"Cover-6","type":"zone","n":21,"open":38.095238095238095,"close":23.809523809523807}]},"def":{"n":191,"open":21.465968586387437,"close":34.55497382198953,"rank":13,"cov":[{"cov":"Cover-1","type":"man","n":45,"open":20.0,"close":22.22222222222222},{"cov":"Cover-3","type":"zone","n":78,"open":25.64102564102564,"close":32.05128205128205},{"cov":"Quarters","type":"zone","n":34,"open":23.52941176470588,"close":47.05882352941176},{"cov":"Cover-6","type":"zone","n":19,"open":10.526315789473683,"close":63.1578947368421}]}},{"abbr":"TB","name":"Tampa Bay Buccaneers","in_sentence":"the Buccaneers","singular":false,"off":{"n":284,"open":24.295774647887324,"close":34.859154929577464,"rank":23,"cov":[{"cov":"Cover-1","type":"man","n":84,"open":11.904761904761903,"close":32.142857142857146},{"cov":"Cover-2","type":"zone","n":41,"open":43.90243902439025,"close":26.82926829268293},{"cov":"Cover-3","type":"zone","n":62,"open":24.193548387096776,"close":41.935483870967744},{"cov":"Quarters","type":"zone","n":26,"open":23.076923076923077,"close":42.30769230769231},{"cov":"Cover-6","type":"zone","n":31,"open":29.03225806451613,"close":38.70967741935484}]},"def":{"n":271,"open":32.10332103321033,"close":33.210332103321036,"rank":17,"cov":[{"cov":"Cover-1","type":"man","n":35,"open":22.857142857142858,"close":20.0},{"cov":"Cover-2","type":"zone","n":56,"open":37.5,"close":42.857142857142854},{"cov":"Cover-3","type":"zone","n":72,"open":37.5,"close":30.555555555555557},{"cov":"Quarters","type":"zone","n":41,"open":26.82926829268293,"close":41.46341463414634},{"cov":"Cover-6","type":"zone","n":15,"open":33.33333333333333,"close":26.666666666666668},{"cov":"2-Man","type":"man","n":21,"open":33.33333333333333,"close":14.285714285714285}]}},{"abbr":"TEN","name":"Tennessee Titans","in_sentence":"the Titans","singular":false,"off":{"n":236,"open":25.423728813559322,"close":33.05084745762712,"rank":18,"cov":[{"cov":"Cover-1","type":"man","n":66,"open":21.21212121212121,"close":27.27272727272727},{"cov":"Cover-2","type":"zone","n":31,"open":29.03225806451613,"close":38.70967741935484},{"cov":"Cover-3","type":"zone","n":69,"open":26.08695652173913,"close":34.78260869565217},{"cov":"Quarters","type":"zone","n":32,"open":18.75,"close":40.625},{"cov":"Cover-6","type":"zone","n":19,"open":47.368421052631575,"close":26.31578947368421}]},"def":{"n":267,"open":20.59925093632959,"close":38.951310861423224,"rank":6,"cov":[{"cov":"Cover-1","type":"man","n":67,"open":14.925373134328357,"close":34.32835820895522},{"cov":"Cover-2","type":"zone","n":50,"open":32.0,"close":42.0},{"cov":"Cover-3","type":"zone","n":71,"open":23.943661971830984,"close":40.845070422535215},{"cov":"Quarters","type":"zone","n":37,"open":18.91891891891892,"close":56.75675675675676}]}},{"abbr":"WAS","name":"Washington Football Team","in_sentence":"Washington","singular":true,"off":{"n":251,"open":26.693227091633464,"close":29.880478087649404,"rank":15,"cov":[{"cov":"Cover-1","type":"man","n":68,"open":25.0,"close":26.47058823529412},{"cov":"Cover-2","type":"zone","n":41,"open":36.58536585365854,"close":29.268292682926827},{"cov":"Cover-3","type":"zone","n":70,"open":28.57142857142857,"close":35.714285714285715},{"cov":"Quarters","type":"zone","n":25,"open":20.0,"close":24.0},{"cov":"Cover-6","type":"zone","n":21,"open":28.57142857142857,"close":38.095238095238095}]},"def":{"n":268,"open":28.73134328358209,"close":29.1044776119403,"rank":22,"cov":[{"cov":"Cover-1","type":"man","n":66,"open":22.727272727272727,"close":18.181818181818183},{"cov":"Cover-2","type":"zone","n":22,"open":36.36363636363637,"close":27.27272727272727},{"cov":"Cover-3","type":"zone","n":85,"open":28.235294117647058,"close":40.0},{"cov":"Quarters","type":"zone","n":49,"open":36.734693877551024,"close":30.612244897959183},{"cov":"Cover-6","type":"zone","n":19,"open":42.10526315789473,"close":21.052631578947366}]}}],"pos":{"WR":{"name":"wide receiver","plural":"wide receivers","title":"Wide receivers","open":26.4945652173913,"steady":43.682065217391305,"close":29.82336956521739},"TE":{"name":"tight end","plural":"tight ends","title":"Tight ends","open":29.494561740243125,"steady":39.41138835572617,"close":31.09404990403071},"RB":{"name":"running back","plural":"running backs","title":"Running backs","open":21.849427168576106,"steady":29.78723404255319,"close":48.3633387888707}},"league":{"open":26.435357290375876,"close":33.23695442654551},"picks":[{"label":"Most catches above a typical receiver","i":19},{"label":"Most catches below a typical receiver","i":85},{"label":"Highest share of opening windows","i":53},{"label":"Highest share of closing windows","i":61}],"closeEnough":2,"diffMin":-15,"diffMax":7,"defaultPlayer":"Cooper Kupp","defaultTeam":"KC"}</script>
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('wt-data').textContent);
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+    });
+  }
+  function pc(x) { return Math.round(Number(x)) + '%'; }
+  function ord(n) {
+    var s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+  function strip(name, o, s, c) {
+    return '<div class="mix"><div class="mix-name">' + esc(name) + '</div>' +
+      '<div class="mix-bar" role="img" aria-label="' + esc(name) + ': ' + pc(o) + ' opening, ' + pc(s) + ' steady, ' + pc(c) + ' closing">' +
+      '<span class="seg open" style="flex:' + o + ' 1 0"></span>' +
+      '<span class="seg steady" style="flex:' + s + ' 1 0"></span>' +
+      '<span class="seg close" style="flex:' + c + ' 1 0"></span></div>' +
+      '<div class="mix-key"><span><i class="sw open"></i>Opening ' + pc(o) + '</span>' +
+      '<span><i class="sw steady"></i>Steady ' + pc(s) + '</span>' +
+      '<span><i class="sw close"></i>Closing ' + pc(c) + '</span></div></div>';
+  }
+  var teamByAbbr = {};
+  D.teams.forEach(function (t) { teamByAbbr[t.abbr] = t; });
+
+  /* ---------- player ---------- */
+  var playerSel = document.getElementById('player');
+  var playerOut = document.getElementById('player-report');
+  ['WR', 'TE', 'RB'].forEach(function (pos) {
+    var group = document.createElement('optgroup');
+    group.label = D.pos[pos].title;
+    D.players.forEach(function (p, i) {
+      if (p.pos !== pos) { return; }
+      var o = document.createElement('option');
+      o.value = String(i);
+      o.textContent = p.name + ' (' + p.teams.join(' / ') + ')';
+      if (p.name === D.defaultPlayer) { o.selected = true; }
+      group.appendChild(o);
+    });
+    playerSel.appendChild(group);
+  });
+  function renderPlayer() {
+    var p = D.players[Number(playerSel.value)];
+    var pos = D.pos[p.pos];
+    var team = p.teams.map(function (a) { return teamByAbbr[a] ? teamByAbbr[a].name : a; }).join(' and ');
+    var open = 100 * p.n_open / p.n, close = 100 * p.n_close / p.n;
+    var size = Math.abs(p.diff), verdict;
+    if (size < D.closeEnough) {
+      verdict = 'About what you would expect from a typical receiver.';
+    } else {
+      verdict = 'About ' + size + (p.diff > 0 ? ' more' : ' fewer') + ' catches than a typical receiver.';
+    }
+    playerOut.innerHTML =
+      '<p><b>' + esc(p.name) + '</b> (' + esc(pos.name) + ', ' + esc(team) + ') was thrown to <b>' + p.n + ' times</b> and caught <b>' +
+      p.catches + '</b> (' + pc(100 * p.catches / p.n) + ').</p>' +
+      '<p>On ' + p.n_open + ' of those throws (' + pc(open) + ') the window was opening; a typical ' + esc(pos.name) + ' gets ' + pc(pos.open) + '. ' +
+      'On ' + p.n_close + ' (' + pc(close) + ') a defender was closing; typical is ' + pc(pos.close) + '.</p>' +
+      '<p>A typical receiver given throws with the same space and the same windows would catch about <b>' + p.exp + '</b>.</p>' +
+      '<p class="verdict">' + verdict + '<span>For scale: the ' + D.players.length + ' players here run from ' +
+      Math.abs(D.diffMin) + ' fewer to ' + D.diffMax + ' more.</span></p>' +
+      '<h3>His throws compared with a typical ' + esc(pos.name) + '</h3>' +
+      strip(p.name, open, 100 - open - close, close) +
+      strip('Typical ' + pos.name, pos.open, pos.steady, pos.close);
+  }
+  playerSel.addEventListener('change', renderPlayer);
+  var picks = document.getElementById('picks');
+  D.picks.forEach(function (k) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = k.label + ': ' + D.players[k.i].name;
+    b.addEventListener('click', function () { playerSel.value = String(k.i); renderPlayer(); });
+    picks.appendChild(b);
+  });
+  renderPlayer();
+
+  /* ---------- team ---------- */
+  var teamSel = document.getElementById('team');
+  var teamOut = document.getElementById('team-report');
+  D.teams.forEach(function (t) {
+    var o = document.createElement('option');
+    o.value = t.abbr;
+    o.textContent = t.name;
+    if (t.abbr === D.defaultTeam) { o.selected = true; }
+    teamSel.appendChild(o);
+  });
+  function side() {
+    var r = document.querySelector('input[name="side"]:checked');
+    return r ? r.value : 'off';
+  }
+  function renderTeam() {
+    var t = teamByAbbr[teamSel.value], s = side(), d = t[s], html, cap;
+    var who = esc(t.in_sentence);
+    if (s === 'off') {
+      html = '<p>When ' + who + (t.singular ? ' throws' : ' throw') + ', the receiver is still getting more open on <b>' + pc(d.open) +
+        '</b> of throws. That ranks <b>' + ord(d.rank) + ' of 32</b> teams (1st means most often; higher is better for the offense). The league average is ' + pc(D.league.open) + '.</p>' +
+        '<p>A defender is closing on ' + pc(d.close) + ' of their throws (league average: ' + pc(D.league.close) + '). Based on ' + d.n + ' throws.</p>';
+      cap = 'By the coverage the defense was playing against ' + who;
+    } else {
+      html = '<p>When teams throw on ' + who + ', a defender is closing on <b>' + pc(d.close) +
+        '</b> of throws. That ranks <b>' + ord(d.rank) + ' of 32</b> teams (1st means most often; higher is better for the defense). The league average is ' + pc(D.league.close) + '.</p>' +
+        '<p>The receiver is still getting more open on ' + pc(d.open) + ' of those throws (league average: ' + pc(D.league.open) + '). Based on ' + d.n + ' throws.</p>';
+      cap = 'By the coverage ' + who + (t.singular ? ' was' : ' were') + ' playing';
+    }
+    var rows = d.cov.map(function (c) {
+      return '<tr><td>' + esc(c.cov) + ' <small>(' + esc(c.type) + ')</small></td><td>' + c.n + '</td><td>' + pc(c.open) + '</td><td>' + pc(c.close) + '</td></tr>';
+    }).join('');
+    html += '<table><caption>' + cap + '</caption><thead><tr><th scope="col">Coverage</th><th scope="col">Throws</th>' +
+      '<th scope="col"><i class="sw open"></i>% of throws opening</th><th scope="col"><i class="sw close"></i>% of throws closing</th></tr></thead><tbody>' + rows +
+      '<tr class="total"><td>All throws</td><td>' + d.n + '</td><td>' + pc(d.open) + '</td><td>' + pc(d.close) + '</td></tr></tbody></table>' +
+      '<p class="note">Man: each defender follows one receiver. Zone: each defender guards an area of the field.</p>';
+    teamOut.innerHTML = html;
+  }
+  teamSel.addEventListener('change', renderTeam);
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="side"]'), function (r) {
+    r.addEventListener('change', renderTeam);
+  });
+  renderTeam();
+})();
+</script>
+</body>
+</html>

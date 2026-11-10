@@ -1,0 +1,5 @@
+alignment,targets,pct_opening,pct_steady,pct_closing,n_opening,n_closing,comp_pct_opening,comp_pct_closing,n_opening_1to3yd,n_closing_1to3yd,comp_pct_opening_1to3yd,comp_pct_closing_1to3yd,yac_opening,yac_closing,epa_per_target_opening,epa_per_target_closing,comp_gap_pts,comp_gap_1to3yd_pts,yac_gap
+wide,3175,23.5,45.5,31.0,745,984,74.9,54.3,195,422,71.8,43.4,4.32,3.3,0.547,0.192,20.6,28.4,1.02
+slot,2248,30.4,38.8,30.8,684,692,73.2,62.9,197,268,67.5,49.3,5.0,3.32,0.658,0.11,10.3,18.2,1.68
+inline TE,763,33.3,39.2,27.5,254,210,77.2,66.7,41,77,58.5,57.1,6.36,2.56,0.545,-0.054,10.5,1.4,3.8
+backfield,1072,21.7,29.1,49.2,233,527,85.0,71.7,13,70,76.9,48.6,9.82,5.04,0.259,-0.029,13.3,28.3,4.78

@@ -1,0 +1,9 @@
+﻿bdb-data/
+__pycache__/
+*.pyc
+.venv/
+
+external/*.csv.gz
+cache/
+.vscode/
+.claude/

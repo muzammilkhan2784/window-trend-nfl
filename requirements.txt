@@ -1,0 +1,8 @@
+﻿polars>=1.0
+pandas>=2.0
+numpy
+scipy
+matplotlib
+seaborn
+pyarrow
+plotly

@@ -1,0 +1,4 @@
+position,targets,pct_opening,pct_steady,pct_closing,n_opening,n_closing,comp_pct_opening,comp_pct_closing,n_opening_1to3yd,n_closing_1to3yd,comp_pct_opening_1to3yd,comp_pct_closing_1to3yd,yac_opening,yac_closing,epa_per_target_opening,epa_per_target_closing,comp_gap_pts,comp_gap_1to3yd_pts,yac_gap
+WR,4416,26.5,43.7,29.8,1170,1317,73.8,56.6,320,546,69.1,45.2,4.65,3.14,0.632,0.185,17.2,23.9,1.51
+TE,1563,29.5,39.4,31.1,461,486,76.4,63.0,107,193,66.4,50.8,5.47,3.03,0.515,-0.004,13.4,15.6,2.44
+RB,1279,22.3,30.0,47.7,285,610,83.2,71.5,19,98,78.9,49.0,9.15,5.06,0.281,-0.004,11.7,29.9,4.09
