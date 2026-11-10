@@ -1,22 +1,22 @@
 # Window Trend
 
-**The big idea:** when the quarterback lets go of the ball, is the receiver getting *more* open or *less* open? Same 2–3 yards of space, and the pass is caught **68%** of the time if his defender is falling behind, **51%** if the defender is closing in.
+**The big idea:** two receivers can have the same separation when the ball comes out and still be very different throws. With 2–3 yards of separation, the pass is completed **68%** of the time if the receiver is still separating from his defender at the release, and **51%** if the defender is closing on him.
 
 ![In tight coverage, an opening window beats a closing one](figures/takeaway.png)
 
-**Why we went this way:** separation is always reported as one snapshot. In the tracking data, receivers with the same separation kept getting very different results, and the difference was which way the gap was moving. That direction at the moment of the throw is not a publicly available stat.
+**Why we went this way:** separation is charted as a snapshot at one instant. On film a coach can see whether the defender is trailing or driving on the throw; the snapshot number cannot. In the tracking data, targets with the same separation kept ending differently, and the difference was which way the window was moving. That direction at the release is not a publicly available stat.
 
-**How it helps:** it shows what kind of throws wide receivers, tight ends and running backs are actually being given, so their catch rates and yards after the catch can be judged fairly.
+**How it helps:** it grades the quality of the target. It shows what kind of throws wide receivers, tight ends and running backs are being given, so their catch rate and yards after the catch (YAC) can be judged fairly.
 
-**Who would use it:** a **scout** comparing receivers, a **coach** timing throws and checking which coverages close on his players, and a **broadcaster** who wants one arrow on a replay.
+**Who would use it:** a **scout** separating a receiver's hands from the throws he was given, a **coach** getting the ball out while the receiver is still separating (or checking which coverages his defense closes in), and a **broadcaster** who wants one arrow on a replay.
 
-**Open the tool:** [plain-English front page](docs/index.html) · [team and coverage explorer](docs/team-explorer.html)
+**Open the tool:** [Window Trend, explained](https://muzammilkhan2784.github.io/window-trend-nfl/) · [team and coverage explorer](https://muzammilkhan2784.github.io/window-trend-nfl/team-explorer.html)
 
 ## What it shows about receivers, tight ends and running backs
 
-- **Wide receivers:** the effect is strongest out wide. In tight coverage (1–3 yards of space), 72% caught on opening windows, 43% on closing ones.
-- **Tight ends:** a closing window erases the value of the target (expected points per target +0.52 opening, 0.00 closing).
-- **Running backs:** 48% of their targets arrive with a defender closing (wide receivers: 30%). An opening window is worth 4 more yards after the catch (9.3 vs 5.1).
+- **Outside receivers:** the effect is strongest for receivers split out wide. On tight-window throws (1–3 yards of separation), 72% are completed when the window is opening and 43% when it is closing.
+- **Tight ends:** a closing window erases the value of the target (expected points added per target: +0.52 opening, 0.00 closing).
+- **Running backs:** 48% of their targets arrive with a defender closing (wide receivers: 30%). Catching it in an opening window is worth 4 more yards of YAC (9.3 vs 5.1).
 - **Players:** Mark Andrews saw an opening window on 43% of his targets; Tee Higgins and DeVonta Smith on 14%.
 
 ![2.2 yards open is not always 2.2 yards open](figures/example_plays.png)
