@@ -23,7 +23,7 @@
 
 ![2.2 yards open is not always 2.2 yards open](figures/example_plays.png)
 
-## The metric
+## Method: the metric
 
 | Name | What it is | Unit |
 |---|---|---|
@@ -37,7 +37,7 @@
 - **What that meant:** everything is measured at the moment of release, across 7,263 targeted throws. The targeted receiver is not a column, so we read it from the play description (matched on 96% of throws).
 - **What we added:** public [nflverse](https://github.com/nflverse/nflverse-data) play-by-play, joined on game and play id, for yards after the catch and expected points.
 
-## Limitations
+## Assumptions and limitations
 
 - Window Trend largely forecasts where separation will be half a second after the throw. We never see the ball arrive.
 - The player numbers describe the throws a receiver was **given** over eight weeks (quarterback timing, play design, coverage). They are context for his catch rate, not a grade of how well he gets open: Opening Rate does not repeat from one half of a receiver's games to the other. It is stable for quarterbacks.
