@@ -1,6 +1,8 @@
 # Window Trend
 
-**The big idea:** two receivers can have the same separation when the ball comes out and still be very different throws. With 2–3 yards of separation, the pass is completed **68%** of the time if the receiver is still separating from his defender at the release, and **51%** if the defender is closing on him.
+### Two receivers are both 2.5 yards open when the ball comes out. Are they equally open?
+
+**The big idea:** no. Two receivers can have the same separation when the ball comes out and still be very different throws. With 2–3 yards of separation, the pass is completed **68%** of the time if the receiver is still separating from his defender at the release, and **51%** if the defender is closing on him.
 
 ![In tight coverage, an opening window beats a closing one](figures/takeaway.png)
 
