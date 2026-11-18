@@ -1,5 +1,7 @@
 # Window Trend
 
+🥈 **2nd Place, NFL Big Data Bowl NYU Edition** (November 2026). Built in three hours at NYU's first Big Data Bowl pop-up, hosted by NYU, the NFL, AWS and Accenture, with Python and Kiro.
+
 ### Two receivers are both 2.5 yards open when the ball comes out. Are they equally open?
 
 **What we built:** Window Trend, a new per-throw metric for wide receivers, tight ends and running backs, with an interactive player and team explorer. It measures whether the gap to the nearest defender is growing or shrinking in the half-second before the throw.
