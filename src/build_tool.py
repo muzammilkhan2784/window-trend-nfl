@@ -279,7 +279,7 @@ def build_html(payload: dict) -> str:
 <body>
 <header>
   <h1>Window Trend Tool - is the receiver's window opening or closing at the throw?</h1>
-  <p>For every targeted pass we measure the target's separation from the nearest
+  <p>For every targeted pass I measure the target's separation from the nearest
      defender at release and 0.5 s earlier. Opening = pulling away; Closing =
      defender driving on the ball; Steady = in between.</p>
 </header>

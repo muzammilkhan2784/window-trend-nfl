@@ -4,13 +4,13 @@
 
 ### Two receivers are both 2.5 yards open when the ball comes out. Are they equally open?
 
-**What we built:** Window Trend, a new per-throw metric for wide receivers, tight ends and running backs, with an interactive player and team explorer. It measures whether the gap to the nearest defender is growing or shrinking in the half-second before the throw.
+**What I built:** Window Trend, a new per-throw metric for wide receivers, tight ends and running backs, with an interactive player and team explorer. It measures whether the gap to the nearest defender is growing or shrinking in the half-second before the throw.
 
 **The big idea:** no. Two receivers can have the same separation when the ball comes out and still be very different throws. With 2–3 yards of separation, the pass is completed **68%** of the time if the receiver is still separating from his defender at the release, and **51%** if the defender is closing on him.
 
 ![In tight coverage, an opening window beats a closing one](figures/takeaway.png)
 
-**Why we went this way:** the public separation stat (Next Gen Stats) is one snapshot, taken when the ball arrives. The quarterback has to decide at the release, before anyone knows how that ends. On film a coach can see whether the defender is trailing or driving on the throw; a snapshot cannot. In the tracking data, targets with the same separation kept ending differently, and the difference was which way the window was moving. That direction at the release is not a public stat.
+**Why I went this way:** the public separation stat (Next Gen Stats) is one snapshot, taken when the ball arrives. The quarterback has to decide at the release, before anyone knows how that ends. On film a coach can see whether the defender is trailing or driving on the throw; a snapshot cannot. In the tracking data, targets with the same separation kept ending differently, and the difference was which way the window was moving. That direction at the release is not a public stat.
 
 **How it helps:** it grades the quality of the target. It shows what kind of throws wide receivers, tight ends and running backs are being given, so their catch rate and yards after the catch (YAC) can be judged fairly.
 
@@ -37,13 +37,13 @@
 
 ## About the data
 
-- **What we were given:** player tracking for 8,557 pass plays (2021, Weeks 1–8), plus play, player and PFF role files. The tracking runs from the snap to half a second after the throw. There is no catch and no run after the catch in it.
-- **What that meant:** everything is measured at the moment of release, across 7,263 targeted throws. The targeted receiver is not a column, so we read it from the play description (matched on 96% of throws).
-- **What we added:** public [nflverse](https://github.com/nflverse/nflverse-data) play-by-play, joined on game and play id, for yards after the catch and expected points.
+- **What I was given:** player tracking for 8,557 pass plays (2021, Weeks 1–8), plus play, player and PFF role files. The tracking runs from the snap to half a second after the throw. There is no catch and no run after the catch in it.
+- **What that meant:** everything is measured at the moment of release, across 7,263 targeted throws. The targeted receiver is not a column, so I read it from the play description (matched on 96% of throws).
+- **What I added:** public [nflverse](https://github.com/nflverse/nflverse-data) play-by-play, joined on game and play id, for yards after the catch and expected points.
 
 ## Assumptions and limitations
 
-- Window Trend largely forecasts where separation will be half a second after the throw. We never see the ball arrive.
+- Window Trend largely forecasts where separation will be half a second after the throw. The data never shows the ball arrive.
 - The player numbers describe the throws a receiver was **given** over eight weeks (quarterback timing, play design, coverage). They are context for his catch rate, not a grade of how well he gets open: a receiver's Opening Rate in one half of his games does not predict it in the other half, while a quarterback's does.
 - Where it does no better than plain separation: receivers who are already 5+ yards open, and tight ends lined up inline (59% vs 57%).
 - These are observational splits, not cause and effect. Nothing is adjusted for route type (the data has no route labels): a comeback is closing by design and a crosser is opening, so part of the gap is route mix.
